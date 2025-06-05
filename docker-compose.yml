@@ -19,9 +19,9 @@ services:
     ports:
       - '5432:5432'
     environment:
-      POSTGRES_DB: service_template_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: wallet_transaction
+      POSTGRES_USER: easy_pay
+      POSTGRES_PASSWORD: n^76bw!q55t^QM3mUrqf
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
