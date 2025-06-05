@@ -1,4 +1,4 @@
-import { PixAddressKeyType } from '../entities/pix-address-key-type';
+import { PixAddressKeyType } from './pix-address-key-type';
 
 export class CreatePixTransferRequestDto {
     constructor(
