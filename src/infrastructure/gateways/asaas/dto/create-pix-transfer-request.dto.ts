@@ -7,5 +7,6 @@ export class CreatePixTransferRequestDto {
       public readonly pixAddressKeyType: PixAddressKeyType,
       public readonly description?: string,
       public readonly scheduleDate?: string | null,
+      public readonly externalReference?: string | null,
     ) {}
   }
