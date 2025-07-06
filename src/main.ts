@@ -5,19 +5,24 @@ import { makeAsaasTransferClient } from './main/factories/make-asaas-client';
 import { mockCreatePixTransferRequestDto } from 'test/infraestructure/gateways/asaas/mock-create-pix-transfer-request.dto';
 import { CreatePixTransferRequestDto } from './infrastructure/gateways/asaas/dto/create-pix-transfer-request.dto';
 import { randomUUID } from 'crypto';
+import { PixAddressKeyType } from './infrastructure/gateways/asaas/dto/pix-address-key-type';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 3003);
 
   const queueConsumer = makeQueueConsumer();
   await queueConsumer.consume({
     queue: 'finance.transaction.process',
     onMessage: async (message: any) => {
-      const content = message.content.toString();
-      const parsed = JSON.parse(content);
+      console.log('message', message);
 
-      const { pattern, data } = parsed;
+      // if(!message.content) return;
+
+      // const content = message.toString();
+      // const parsed = JSON.parse(content);
+
+      const { pattern, data } = message;
 
       if (pattern === 'SINGLE_TRANSACTION_CREATED') {
         const { value, pixKey, pixKeyType } = data;
@@ -29,16 +34,17 @@ async function bootstrap() {
         const dto = new CreatePixTransferRequestDto(
           value,
           pixKey,
-          pixKeyType,
+          PixAddressKeyType.CPF,
           null,
           null,
-          randomUUID().toString()
+          randomUUID().toString(),
         );
 
-        const transfer = await asaasTransferClient.createTransfer(dto)
+        console.log('DTO:', dto);
 
+        const transfer = await asaasTransferClient.createTransfer(dto);
       }
-    }
+    },
   });
 }
 
