@@ -63,4 +63,7 @@ export class Transfer {
   @OneToOne(() => BankAccount, { cascade: true, eager: true })
   @JoinColumn()
   bankAccount: BankAccount;
+
+  @Column()
+  externalReference: string
 }

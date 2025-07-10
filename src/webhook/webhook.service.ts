@@ -57,6 +57,7 @@ export class WebhookService {
       transactionReceiptUrl: transferDto.transactionReceiptUrl ?? undefined,
       operationType: transferDto.operationType,
       description: transferDto.description ?? undefined,
+      externalReference: transferDto.externalReference ?? undefined,
       bankAccount,
     });
 

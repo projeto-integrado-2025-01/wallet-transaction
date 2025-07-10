@@ -18,4 +18,5 @@ export class TransferDto {
   bankAccount: BankAccountDto;
   operationType: string;
   description: string | null;
+  externalReference: string | null;
 }
