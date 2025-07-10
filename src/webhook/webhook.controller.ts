@@ -7,7 +7,6 @@ export class WebhookController {
   @HttpCode(204) // evita retorno de 201
   handleTransferWebhook(
     @Body() body: TransferWebhookDto,
-    @Headers('x-signature') signature?: string, // se tiver alguma assinatura
   ) {
     // Aqui você pode validar, persistir, logar, etc.
     console.log('Webhook recebido:', body);
