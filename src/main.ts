@@ -43,7 +43,11 @@ async function bootstrap() {
         console.log("DD:", pixAddressKeyTypeFromString(singleTransaction.eventTransaction.pixKeyType))
         console.log('DTO:', dto);
 
-        await asaasTransferClient.createTransfer(dto);
+        try {
+          await asaasTransferClient.createTransfer(dto);
+        } catch (error) {
+          console.error('Erro ao criar transferência:', error);
+        }
       }
     },
   });
