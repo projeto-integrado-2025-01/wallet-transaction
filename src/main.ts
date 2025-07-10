@@ -15,6 +15,7 @@ async function bootstrap() {
 
   const singleTransactionService = app.get(SingleTransactionService); // injeta service do Nest
 
+  const asaasTransferClient = makeAsaasTransferClient();
 
   const queueConsumer = makeQueueConsumer();
   await queueConsumer.consume({
@@ -42,7 +43,7 @@ async function bootstrap() {
         console.log("DD:", pixAddressKeyTypeFromString(singleTransaction.eventTransaction.pixKeyType))
         console.log('DTO:', dto);
 
-        // const transfer = await asaasTransferClient.createTransfer(dto);
+        await asaasTransferClient.createTransfer(dto);
       }
     },
   });
