@@ -12,7 +12,8 @@ import {
 import { SingleTransactionService } from './webhook/services/single-transaction.service';
 import { CreateSingleTransactionDto } from './webhook/dto/create-single-transaction.dto';
 import { ClientProxy } from '@nestjs/microservices';
-import { makeTransactionQueue } from './infrastructure/queue/queue-publish';
+import { makeTransactionProcessQueue, makeTransactionQueue } from './infrastructure/queue/queue-publish';
+import { parseXlsxFromS3 } from './infrastructure/aws/file-processor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,8 @@ async function bootstrap() {
   const singleTransactionService = app.get(SingleTransactionService); // injeta service do Nest
 
   const transactionQueue = makeTransactionQueue();
+
+  const transactionProcessQueue = makeTransactionProcessQueue();
 
   const asaasTransferClient = makeAsaasTransferClient();
 
@@ -59,6 +62,21 @@ async function bootstrap() {
             endToEndId: singleTransaction.eventTransaction.endToEndId,
             status: 'ERROR',
           });
+        }
+      } 
+      
+      else if (pattern === 'BATCH_TRANSACTION_CREATED') {
+        const { fileName } = data;
+
+        const transactions = await parseXlsxFromS3(
+          "easy-pay-batch-transaction",
+          fileName,
+        );
+      
+        await transactionProcessQueue.connect();
+      
+        for (const transaction of transactions) {
+          transactionProcessQueue.emit('SINGLE_TRANSACTION_CREATED', transaction);
         }
       }
     },
