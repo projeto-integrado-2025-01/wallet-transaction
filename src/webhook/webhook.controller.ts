@@ -9,21 +9,21 @@ import { ClientProxy } from '@nestjs/microservices';
 export class WebhookController {
   constructor(
     private readonly webhookService: WebhookService,
-    private readonly transactionQueue: ClientProxy,
+    // private readonly transactionQueue: ClientProxy,
   ) {}
 
   @Post('transfer')
-  @HttpCode(HttpStatus.NO_CONTENT) // evita retorno de 201
+  @HttpCode(HttpStatus.NO_CONTENT)
   async handleTransferWebhook(
     @Body() body: TransferWebhookDto,
   ): Promise<void> {
     await this.webhookService.saveWebhook(body);
 
-    await this.transactionQueue.connect();
-    this.transactionQueue.emit('SINGLE_TRANSACTION_CREATED', {
-      endToEndId,
-      ...data
-    });
+    // await this.transactionQueue.connect();
+    // this.transactionQueue.emit('SINGLE_TRANSACTION_CREATED', {
+    //   endToEndId,
+    //   ...data
+    // });
   }
 
   @Post('approve-transfer')
