@@ -6,6 +6,7 @@ import { TransferService } from './services/transfer.service';
 import { TransferWebhookService } from './services/transfer-webhook.service';
 import { TransferDto } from './dto/transfer.dto';
 import { SingleTransactionService } from './services/single-transaction.service';
+import { TransferApproveWebhookDto } from './dto/transfer-approve-webhook.dto';
 
 @Injectable()
 export class WebhookService {

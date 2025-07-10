@@ -2,6 +2,7 @@ import { Controller, Post, Body, Headers, HttpCode, HttpStatus } from '@nestjs/c
 import { TransferWebhookDto } from './dto/transfer-webhook.dto';
 import { WebhookService } from './webhook.service';
 import { TransferDto } from './dto/transfer.dto';
+import { TransferApproveWebhookDto } from './dto/transfer-approve-webhook.dto';
 
 @Controller('webhook')
 export class WebhookController {
@@ -20,10 +21,10 @@ export class WebhookController {
   @Post('approve-transfer')
   @HttpCode(HttpStatus.OK)
   async handleApproveTransferWebhook(
-    @Body() body: TransferDto,
+    @Body() body: TransferApproveWebhookDto,
   ): Promise<{ status: 'APPROVED' } | { status: 'REFUSED'; refuseReason: string }> {
     try {
-      const approved = await this.webhookService.approveWebhook(body);
+      const approved = await this.webhookService.approveWebhook(body.transfer);
   
       if (approved) {
         return { status: 'APPROVED' };
