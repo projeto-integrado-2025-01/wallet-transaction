@@ -12,25 +12,25 @@ export class BankAccount {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   accountName: string;
 
-  @Column()
+  @Column({ nullable: true })
   ownerName: string;
 
-  @Column()
+  @Column({ nullable: true })
   cpfCnpj: string;
 
-  @Column()
+  @Column({ nullable: true })
   agency: string;
 
-  @Column()
+  @Column({ nullable: true })
   agencyDigit: string;
 
-  @Column()
+  @Column({ nullable: true })
   account: string;
 
-  @Column()
+  @Column({ nullable: true })
   accountDigit: string;
 
   @Column({ nullable: true })
