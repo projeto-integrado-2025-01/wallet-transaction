@@ -5,13 +5,14 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
+  PrimaryColumn,
 } from 'typeorm';
 import { BankAccount } from './bank-account.entity';
 import { TransferWebhook } from './transfer-webhook.entity';
 
 @Entity()
 export class Transfer {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryColumn();
   id: string;
 
   @Column()

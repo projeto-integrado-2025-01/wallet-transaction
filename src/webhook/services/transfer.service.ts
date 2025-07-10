@@ -11,6 +11,10 @@ export class TransferService {
   ) {}
 
   async create(transferData: Partial<Transfer>): Promise<Transfer> {
+    if (!transferData.id) {
+      throw new Error('Transfer ID is required to create or update a transfer.');
+    }
+  
     const existingTransfer = await this.transferRepo.findOne({
       where: { id: transferData.id },
     });
