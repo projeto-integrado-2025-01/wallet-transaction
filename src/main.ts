@@ -17,11 +17,6 @@ async function bootstrap() {
     onMessage: async (message: any) => {
       console.log('message', message);
 
-      // if(!message.content) return;
-
-      // const content = message.toString();
-      // const parsed = JSON.parse(content);
-
       const { pattern, data } = message;
 
       if (pattern === 'SINGLE_TRANSACTION_CREATED') {
