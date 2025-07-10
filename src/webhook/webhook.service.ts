@@ -4,6 +4,8 @@ import { BankService } from './services/bank.service';
 import { BankAccountService } from './services/bank-account.service';
 import { TransferService } from './services/transfer.service';
 import { TransferWebhookService } from './services/transfer-webhook.service';
+import { TransferDto } from './dto/transfer.dto';
+import { SingleTransactionService } from './services/single-transaction.service';
 
 @Injectable()
 export class WebhookService {
@@ -12,6 +14,7 @@ export class WebhookService {
     private readonly bankAccountService: BankAccountService,
     private readonly transferService: TransferService,
     private readonly transferWebhookService: TransferWebhookService,
+    private readonly eventTransactionService: TransferService,
   ) {}
 
   async saveWebhook(webhookDto: TransferWebhookDto) {
@@ -68,5 +71,19 @@ export class WebhookService {
       dateCreated: webhookDto.dateCreated,
       transfer,
     });
+  }
+
+  async approveWebhook(transferDto: TransferDto) {
+    if (!transferDto.externalReference) {
+      throw new Error('External reference is required to approve the webhook');
+    }
+
+    const eventTransfer = this.eventTransactionService.findByEndToEndId(transferDto.externalReference);
+
+    if (!eventTransfer) {
+      throw new Error('Transfer not found for the provided external reference');
+    }
+
+    return true
   }
 }
