@@ -12,7 +12,7 @@ import { TransferWebhook } from './transfer-webhook.entity';
 
 @Entity()
 export class Transfer {
-  @PrimaryColumn();
+  @PrimaryColumn()
   id: string;
 
   @Column()
