@@ -5,15 +5,22 @@ import { makeAsaasTransferClient } from './main/factories/make-asaas-client';
 import { mockCreatePixTransferRequestDto } from 'test/infraestructure/gateways/asaas/mock-create-pix-transfer-request.dto';
 import { CreatePixTransferRequestDto } from './infrastructure/gateways/asaas/dto/create-pix-transfer-request.dto';
 import { randomUUID } from 'crypto';
-import { PixAddressKeyType, pixAddressKeyTypeFromString } from './infrastructure/gateways/asaas/dto/pix-address-key-type';
+import {
+  PixAddressKeyType,
+  pixAddressKeyTypeFromString,
+} from './infrastructure/gateways/asaas/dto/pix-address-key-type';
 import { SingleTransactionService } from './webhook/services/single-transaction.service';
 import { CreateSingleTransactionDto } from './webhook/dto/create-single-transaction.dto';
+import { ClientProxy } from '@nestjs/microservices';
+import { makeTransactionQueue } from './infrastructure/queue/queue-publish';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   await app.listen(process.env.PORT ?? 3000);
 
   const singleTransactionService = app.get(SingleTransactionService); // injeta service do Nest
+
+  const transactionQueue = makeTransactionQueue();
 
   const asaasTransferClient = makeAsaasTransferClient();
 
@@ -26,12 +33,17 @@ async function bootstrap() {
       const { pattern, data } = message;
 
       if (pattern === 'SINGLE_TRANSACTION_CREATED') {
-        const singleTransaction = await singleTransactionService.create(pattern, data as CreateSingleTransactionDto);
+        const singleTransaction = await singleTransactionService.create(
+          pattern,
+          data as CreateSingleTransactionDto,
+        );
 
         const dto = new CreatePixTransferRequestDto(
           singleTransaction.eventTransaction.value,
           singleTransaction.eventTransaction.pixKey,
-          pixAddressKeyTypeFromString(singleTransaction.eventTransaction.pixKeyType),
+          pixAddressKeyTypeFromString(
+            singleTransaction.eventTransaction.pixKeyType,
+          ),
           null,
           singleTransaction.eventTransaction.scheduleDate?.toString(),
           singleTransaction.eventTransaction.endToEndId,
@@ -40,7 +52,13 @@ async function bootstrap() {
         try {
           await asaasTransferClient.createTransfer(dto);
         } catch (error) {
-          console.error('Erro ao criar transferência:', error);
+          await transactionQueue.connect();
+
+          await transactionQueue.connect();
+          transactionQueue.emit('TRANSACTION_STATUS_UPDATED', {
+            endToEndId: singleTransaction.eventTransaction.endToEndId,
+            status: 'ERROR',
+          });
         }
       }
     },
