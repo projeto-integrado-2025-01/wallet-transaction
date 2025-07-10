@@ -27,9 +27,6 @@ async function bootstrap() {
 
       if (pattern === 'SINGLE_TRANSACTION_CREATED') {
         const singleTransaction = await singleTransactionService.create(pattern, data as CreateSingleTransactionDto);
-        console.log('Transação salva:', singleTransaction);
-
-        console.log('Processando transação PIX:');
 
         const dto = new CreatePixTransferRequestDto(
           singleTransaction.eventTransaction.value,
@@ -39,9 +36,6 @@ async function bootstrap() {
           singleTransaction.eventTransaction.scheduleDate?.toString(),
           singleTransaction.eventTransaction.endToEndId,
         );
-
-        console.log("DD:", pixAddressKeyTypeFromString(singleTransaction.eventTransaction.pixKeyType))
-        console.log('DTO:', dto);
 
         try {
           await asaasTransferClient.createTransfer(dto);
