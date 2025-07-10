@@ -1,15 +1,18 @@
-import { Controller, Post, Body, Headers, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, Headers, HttpCode, HttpStatus } from '@nestjs/common';
 import { TransferWebhookDto } from './dto/transfer-webhook.dto';
+import { WebhookService } from './webhook.service';
 
 @Controller('webhook')
 export class WebhookController {
+  constructor(
+    private readonly webhookService: WebhookService,
+  ) {}
+
   @Post('transfer')
-  @HttpCode(204) // evita retorno de 201
-  handleTransferWebhook(
+  @HttpCode(HttpStatus.NO_CONTENT) // evita retorno de 201
+  async handleTransferWebhook(
     @Body() body: TransferWebhookDto,
-  ) {
-    // Aqui você pode validar, persistir, logar, etc.
-    console.log('Webhook recebido:', body);
-    // Por enquanto só loga
+  ): Promise<void> {
+    await this.webhookService.saveWebhook(body);
   }
 }
