@@ -12,7 +12,9 @@ export class AppController {
   async getHello(): Promise<string> {
     const asaasTransferClient = makeAsaasTransferClient();
 
-    const transfer = await asaasTransferClient.createTransfer(mockCreatePixTransferRequestDto())
+    const transfer = await asaasTransferClient.createTransfer(
+      mockCreatePixTransferRequestDto(),
+    );
 
     return this.appService.getHello();
   }
