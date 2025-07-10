@@ -5,11 +5,16 @@ import { makeAsaasTransferClient } from './main/factories/make-asaas-client';
 import { mockCreatePixTransferRequestDto } from 'test/infraestructure/gateways/asaas/mock-create-pix-transfer-request.dto';
 import { CreatePixTransferRequestDto } from './infrastructure/gateways/asaas/dto/create-pix-transfer-request.dto';
 import { randomUUID } from 'crypto';
-import { PixAddressKeyType } from './infrastructure/gateways/asaas/dto/pix-address-key-type';
+import { PixAddressKeyType, pixAddressKeyTypeFromString } from './infrastructure/gateways/asaas/dto/pix-address-key-type';
+import { SingleTransactionService } from './webhook/services/single-transaction.service';
+import { CreateSingleTransactionDto } from './webhook/dto/create-single-transaction.dto';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(process.env.PORT ?? 3003);
+  await app.listen(process.env.PORT ?? 3000);
+
+  const singleTransactionService = app.get(SingleTransactionService); // injeta service do Nest
+
 
   const queueConsumer = makeQueueConsumer();
   await queueConsumer.consume({
@@ -20,24 +25,24 @@ async function bootstrap() {
       const { pattern, data } = message;
 
       if (pattern === 'SINGLE_TRANSACTION_CREATED') {
-        const { value, pixKey, pixKeyType } = data;
+        const singleTransaction = await singleTransactionService.create(pattern, data as CreateSingleTransactionDto);
+        console.log('Transação salva:', singleTransaction);
 
         console.log('Processando transação PIX:');
 
-        const asaasTransferClient = makeAsaasTransferClient();
-
         const dto = new CreatePixTransferRequestDto(
-          value,
-          pixKey,
-          PixAddressKeyType.CPF,
+          singleTransaction.eventTransaction.value,
+          singleTransaction.eventTransaction.pixKey,
+          pixAddressKeyTypeFromString(singleTransaction.eventTransaction.pixKeyType),
           null,
-          null,
-          randomUUID().toString(),
+          singleTransaction.eventTransaction.scheduleDate?.toString(),
+          singleTransaction.eventTransaction.endToEndId,
         );
 
+        console.log("DD:", pixAddressKeyTypeFromString(singleTransaction.eventTransaction.pixKeyType))
         console.log('DTO:', dto);
 
-        const transfer = await asaasTransferClient.createTransfer(dto);
+        // const transfer = await asaasTransferClient.createTransfer(dto);
       }
     },
   });

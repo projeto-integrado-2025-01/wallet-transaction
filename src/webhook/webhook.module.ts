@@ -10,16 +10,20 @@ import { BankService } from './services/bank.service';
 import { BankAccountService } from './services/bank-account.service';
 import { TransferService } from './services/transfer.service';
 import { TransferWebhookService } from './services/transfer-webhook.service';
+import { SingleTransactionService } from './services/single-transaction.service';
+import { SingleTransaction } from './entities/single-transaction.entity';
+import { EventTransaction } from './entities/transaction-event.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TransferWebhook, Transfer, BankAccount, Bank]),
+    TypeOrmModule.forFeature([TransferWebhook, Transfer, BankAccount, Bank, SingleTransaction, EventTransaction]),
   ],
   controllers: [WebhookController],
   providers: [
     WebhookService,
     BankService,
     BankAccountService,
+    SingleTransactionService,
     TransferService,
     TransferWebhookService,
   ],
