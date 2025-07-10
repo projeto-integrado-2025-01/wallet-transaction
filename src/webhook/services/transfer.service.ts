@@ -10,7 +10,17 @@ export class TransferService {
     private transferRepo: Repository<Transfer>,
   ) {}
 
-  async create(transfer: Partial<Transfer>): Promise<Transfer> {
-    return this.transferRepo.save(this.transferRepo.create(transfer));
+  async create(transferData: Partial<Transfer>): Promise<Transfer> {
+    const existingTransfer = await this.transferRepo.findOne({
+      where: { id: transferData.id },
+    });
+  
+    if (existingTransfer) {
+      this.transferRepo.merge(existingTransfer, transferData);
+      return this.transferRepo.save(existingTransfer);
+    }
+  
+    const newTransfer = this.transferRepo.create(transferData);
+    return this.transferRepo.save(newTransfer);
   }
 }

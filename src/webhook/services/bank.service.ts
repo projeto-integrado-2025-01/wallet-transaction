@@ -11,6 +11,18 @@ export class BankService {
   ) {}
 
   async create(bank: Partial<Bank>): Promise<Bank> {
-    return this.bankRepo.save(this.bankRepo.create(bank));
+    const existing = await this.bankRepo.findOne({
+      where: {
+        ispb: bank.ispb,
+        code: bank.code,
+      },
+    });
+
+    if (existing) {
+      return existing;
+    }
+
+    const newBank = this.bankRepo.create(bank);
+    return this.bankRepo.save(newBank);
   }
 }

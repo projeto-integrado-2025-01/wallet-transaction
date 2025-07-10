@@ -11,6 +11,20 @@ export class BankAccountService {
   ) {}
 
   async create(account: Partial<BankAccount>): Promise<BankAccount> {
-    return this.bankAccountRepo.save(this.bankAccountRepo.create(account));
-  }
+    const existing = await this.bankAccountRepo.findOne({
+      where: {
+        cpfCnpj: account.cpfCnpj,
+        agency: account.agency,
+        agencyDigit: account.agencyDigit,
+        account: account.account,
+        accountDigit: account.accountDigit,
+      },
+    });
+  
+    if (existing) {
+      return existing;
+    }
+  
+    const newAccount = this.bankAccountRepo.create(account);
+    return this.bankAccountRepo.save(newAccount);  }
 }
