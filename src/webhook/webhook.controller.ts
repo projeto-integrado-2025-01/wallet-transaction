@@ -28,7 +28,7 @@ export class WebhookController {
     await this.transactionQueue.connect();
     
     this.transactionQueue.emit('TRANSACTION_STATUS_UPDATED', {
-      endToEndId: webhookSaved.endToEndIdentifier,
+      endToEndId: webhookSaved.externalReference,
       status: webhookSaved.status,
     });
   }
