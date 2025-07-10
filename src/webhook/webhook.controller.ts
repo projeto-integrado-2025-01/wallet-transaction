@@ -19,6 +19,12 @@ export class WebhookController {
   ): Promise<void> {
     const webhookSaved = await this.webhookService.saveWebhook(body);
 
+    const approved = await this.webhookService.approveWebhook(body.transfer);
+
+    if (!approved) {
+      throw new Error('Transferência não aprovada');
+    }
+
     await this.transactionQueue.connect();
     
     this.transactionQueue.emit('TRANSACTION_STATUS_UPDATED', {
