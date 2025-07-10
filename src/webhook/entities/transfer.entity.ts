@@ -33,16 +33,16 @@ export class Transfer {
   @Column()
   type: string;
 
-  @Column()
+  @Column('decimal')
   value: number;
 
-  @Column()
+  @Column('decimal')
   netValue: number;
 
-  @Column()
+  @Column('decimal')
   transferFee: number;
 
-  @Column()
+  @Column({ nullable: true })
   scheduleDate: string;
 
   @Column()
