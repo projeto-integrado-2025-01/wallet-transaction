@@ -13,10 +13,24 @@ import { TransferWebhookService } from './services/transfer-webhook.service';
 import { SingleTransactionService } from './services/single-transaction.service';
 import { SingleTransaction } from './entities/single-transaction.entity';
 import { EventTransaction } from './entities/transaction-event.entity';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([TransferWebhook, Transfer, BankAccount, Bank, SingleTransaction, EventTransaction]),
+    ClientsModule.register([
+      {
+        name: 'TRANSACTION_UPDATED_SERVICE',
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://admin:admin@localhost:5672'],
+          queue: 'finance.transaction.process',
+          queueOptions: {
+            durable: true,
+          }
+        }
+      }
+    ]),
   ],
   controllers: [WebhookController],
   providers: [

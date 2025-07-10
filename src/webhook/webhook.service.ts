@@ -7,6 +7,7 @@ import { TransferWebhookService } from './services/transfer-webhook.service';
 import { TransferDto } from './dto/transfer.dto';
 import { SingleTransactionService } from './services/single-transaction.service';
 import { TransferApproveWebhookDto } from './dto/transfer-approve-webhook.dto';
+import { Transfer } from './entities/transfer.entity';
 
 @Injectable()
 export class WebhookService {
@@ -18,7 +19,7 @@ export class WebhookService {
     private readonly eventTransactionService: TransferService,
   ) {}
 
-  async saveWebhook(webhookDto: TransferWebhookDto) {
+  async saveWebhook(webhookDto: TransferWebhookDto): Promise<Transfer> {
     const transferDto = webhookDto.transfer;
     const bankDto = transferDto.bankAccount.bank;
     const bankAccountDto = transferDto.bankAccount;
@@ -72,6 +73,8 @@ export class WebhookService {
       dateCreated: webhookDto.dateCreated,
       transfer,
     });
+
+    return transfer
   }
 
   async approveWebhook(transferDto: TransferDto) {
