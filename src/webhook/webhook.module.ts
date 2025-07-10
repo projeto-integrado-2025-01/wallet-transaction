@@ -24,7 +24,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
         transport: Transport.RMQ,
         options: {
           urls: ['amqp://admin:admin@localhost:5672'],
-          queue: 'finance.transaction.process',
+          queue: 'finance.transaction.updated.process',
           queueOptions: {
             durable: true,
           }
