@@ -3,11 +3,13 @@ import { TransferWebhookDto } from './dto/transfer-webhook.dto';
 import { WebhookService } from './webhook.service';
 import { TransferDto } from './dto/transfer.dto';
 import { TransferApproveWebhookDto } from './dto/transfer-approve-webhook.dto';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Controller('webhook')
 export class WebhookController {
   constructor(
     private readonly webhookService: WebhookService,
+    private readonly transactionQueue: ClientProxy,
   ) {}
 
   @Post('transfer')
@@ -16,6 +18,12 @@ export class WebhookController {
     @Body() body: TransferWebhookDto,
   ): Promise<void> {
     await this.webhookService.saveWebhook(body);
+
+    await this.transactionQueue.connect();
+    this.transactionQueue.emit('SINGLE_TRANSACTION_CREATED', {
+      endToEndId,
+      ...data
+    });
   }
 
   @Post('approve-transfer')
