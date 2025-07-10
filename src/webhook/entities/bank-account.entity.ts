@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Bank } from './bank.entity';
 
@@ -36,7 +37,7 @@ export class BankAccount {
   @Column({ nullable: true })
   pixAddressKey: string;
 
-  @OneToOne(() => Bank, { cascade: true, eager: true })
+  @ManyToOne(() => Bank, { cascade: true, eager: true })
   @JoinColumn()
   bank: Bank;
 }

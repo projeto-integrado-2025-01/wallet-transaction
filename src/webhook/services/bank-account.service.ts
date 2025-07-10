@@ -22,8 +22,11 @@ export class BankAccountService {
     });
   
     if (existing) {
+      console.log("Caiu aqui")
       return existing;
     }
+
+    console.log("Caiu aquasdasdasi")
   
     const newAccount = this.bankAccountRepo.create(account);
     return this.bankAccountRepo.save(newAccount);  }

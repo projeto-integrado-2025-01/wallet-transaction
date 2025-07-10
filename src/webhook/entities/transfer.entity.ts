@@ -5,14 +5,14 @@ import {
   OneToOne,
   JoinColumn,
   OneToMany,
-  PrimaryColumn,
+  ManyToOne,
 } from 'typeorm';
 import { BankAccount } from './bank-account.entity';
 import { TransferWebhook } from './transfer-webhook.entity';
 
 @Entity()
 export class Transfer {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
@@ -63,7 +63,7 @@ export class Transfer {
   @Column({ nullable: true })
   description: string;
 
-  @OneToOne(() => BankAccount, { cascade: true, eager: true })
+  @ManyToOne(() => BankAccount, { cascade: true, eager: true })
   @JoinColumn()
   bankAccount: BankAccount;
 
