@@ -4,8 +4,10 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { BankAccount } from './bank-account.entity';
+import { TransferWebhook } from './transfer-webhook.entity';
 
 @Entity()
 export class Transfer {
@@ -66,4 +68,7 @@ export class Transfer {
 
   @Column()
   externalReference: string
+
+  @OneToMany(() => TransferWebhook, webhook => webhook.transfer)
+  webhooks: TransferWebhook[];
 }

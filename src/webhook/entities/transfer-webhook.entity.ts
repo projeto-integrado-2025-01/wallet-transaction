@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { Transfer } from './transfer.entity';
 
@@ -21,7 +23,7 @@ export class TransferWebhook {
   @Column()
   dateCreated: string;
 
-  @OneToOne(() => Transfer, { cascade: true, eager: true })
+  @ManyToOne(() => Transfer, transfer => transfer.webhooks, { eager: true })
   @JoinColumn()
   transfer: Transfer;
 }
